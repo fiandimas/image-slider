@@ -3,9 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var fs = require('fs');
 
 var app = express();
 
@@ -19,8 +17,26 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.get('/', function (req, res, _) {
+  res.render('index');
+});
+
+app.get('/api/images', function(req, res, _) {
+  var images = [];
+  var dir = path.join(__dirname, 'public', 'images');
+
+  fs.readdirSync(dir)
+    .forEach(function (file) {
+      var fstats = fs.lstatSync(path.join(dir, file));
+      if (fstats.isFile()) {
+        images.push(path.join('images', file));
+      }
+    });
+
+  images.unshift('');
+
+  res.json({ images });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

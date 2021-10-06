@@ -1,11 +1,67 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <img src="#" id="img" width="80%" style="display: block; margin-left: auto; margin-right: auto;"></img>
+    <div style="display: flex; justify-content: center;">
+      <button onclick="prev()" style="margin: 10px;">Prev</button>
+      <p style="margin: 10px;" id="page">#</p>
+      <button onclick="next()" style="margin: 10px;">Next</button>
+    </div>
+  </div>
+</body>
+<script>
+  var images = [], page = 1;
+
+  window.onload = function() {
+    var p = new URLSearchParams(window.location.search).get('p');
+
+    fetch('/api/images')
+      .then(resp => resp.json())
+      .then(data => {
+        images = data.images;
+        if (p !== null) {
+          page = parseInt(p, 10);
+          if (isNaN(page)) {
+            page = 1;
+          }
+          if (page < 1) {
+            page = 1;
+          } else if (page > images.length - 1) {
+            page = images.length - 1;
+          }
+        }
+        updateImage();
+      })
+      .catch(e => {
+        alert('error fetch images');
+      });
+  }
+
+  function next() {
+    if (page < images.length - 1) {
+      page += 1;
+      updateImage();
+    }
+  }
+
+  function prev() {
+    if (page > 1) {
+      page -= 1;
+      updateImage();
+    }
+  }
+
+  function updateImage() {
+    window.history.pushState({}, '', '/?p=' + page);
+        document.getElementById('page').textContent = `${page} of ${images.length - 1}`;
+    document.getElementById('img').src = images[page];
+  }
+</script>
 </html>
