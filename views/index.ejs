@@ -60,7 +60,7 @@
 
   function updateImage() {
     window.history.pushState({}, '', '/?p=' + page);
-        document.getElementById('page').textContent = `${page} of ${images.length - 1}`;
+    document.getElementById('page').textContent = `${page} of ${images.length - 1}`;
     document.getElementById('img').src = images[page];
   }
 </script>
